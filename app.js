@@ -22,10 +22,11 @@ window.onload = function() {
             'transitionend',
             function tmp() {
               detail.parentNode.removeEventListener('transitionend', tmp);
-              detail.parentNode.classList.remove('transitioning');
+
               setTimeout(function() {
+                detail.parentNode.classList.remove('transitioning');
                 list.parentNode.classList.remove('current');
-              }, 500);
+              }, 100);
 
             }
           )
@@ -39,24 +40,30 @@ window.onload = function() {
           detail.contentWindow.postMessage('color?' + params, '*');
           break;
         case 'back':
+          // alert('vamos!');
+          list.parentNode.classList.add('transitioning');
           list.parentNode.classList.add('current');
           detail.parentNode.classList.add('transitioning');
-          detail.parentNode.classList.remove('current');
-          // console.log('Back a la lista');
+          // // detail.parentNode.classList.remove('current');
+          // // console.log('Back a la lista');
           detail.parentNode.addEventListener(
             'transitionend',
             function tmp() {
               detail.parentNode.removeEventListener('transitionend', tmp);
               detail.parentNode.classList.remove('transitioning');
-              detail.parentNode.classList.remove('current');
+              list.parentNode.classList.remove('transitioning');
             }
           )
 
-          // detail.parentNode.classList.add('current');
+          // list.parentNode.classList.remove('current');
 
-          // detail.parentNode.classList.remove('current');
-          // list.parentNode.classList.add('transitioning');
-          // list.parentNode.classList.add('current');
+          setTimeout(function() {
+            detail.parentNode.classList.remove('current');
+          }, 500);
+
+
+          // // list.parentNode.classList.add('transitioning');
+          // // list.parentNode.classList.add('current');
           list.contentWindow.postMessage('reset?', '*');
           break;
         default:
