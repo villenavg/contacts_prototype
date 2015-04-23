@@ -23,13 +23,18 @@ window.onload = function() {
             function tmp() {
               detail.parentNode.removeEventListener('transitionend', tmp);
               detail.parentNode.classList.remove('transitioning');
-              list.parentNode.classList.remove('current');
+              setTimeout(function() {
+                list.parentNode.classList.remove('current');
+              }, 500);
+
             }
           )
           detail.parentNode.classList.add('transitioning');
+          list.parentNode.classList.remove('effect');
+          detail.parentNode.classList.add('effect');
           setTimeout(function() {
             detail.parentNode.classList.add('current');
-          }, 400);
+          }, 500);
 
           detail.contentWindow.postMessage('color?' + params, '*');
           break;

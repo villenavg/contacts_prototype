@@ -45,5 +45,5 @@ li div.move-me {
 }
 
 li div.delay {
-  transition-delay: .7s;
+  transition-delay: 1s;
 }

@@ -34,6 +34,13 @@ window.onload = function() {
         case 'reset':
 
           element.style.transform = '';
+          element.addEventListener(
+            'transitionend',
+            function tmp() {
+              element.removeEventListener('transitionend', tmp);
+              element.classList.remove('delay');
+            }
+          );
           element.classList.add('delay');
           element.classList.remove('move-me');
           break;
@@ -51,7 +58,8 @@ window.onload = function() {
       element = e.target;
       e.target.addEventListener(
         'transitionend',
-        function() {
+        function tmp() {
+          element.removeEventListener('transitionend', tmp);
           console.log('terminado');
         }
       );

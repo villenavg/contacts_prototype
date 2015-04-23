@@ -28,8 +28,7 @@ iframe {
 }
 
 .effect {
-  transition: all .3s ease;
-  transition-delay: .3s;
+  transition: all .8s ease;
 }
 
 .transitioning {
