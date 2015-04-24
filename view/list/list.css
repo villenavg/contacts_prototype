@@ -40,7 +40,7 @@ li div{
 
 .fondo {
   background-image: url(image.jpg);
-  background-size: 150% auto;
+  background-size: 210% auto;
   background-position: center;
 }
 
@@ -51,5 +51,5 @@ li div.selected {
 li div.move-me {
   transition: all .3s ease;
   width: 200%;
-  background-size: 100% auto;
+  background-size: 140% auto;
 }
