@@ -19,7 +19,7 @@ ul {
 li {
   position: relative;
   float: left;
-  background: red;
+  background: url(background.png);
   width: 50%;
   height: 20rem;
   box-sizing: border-box;
