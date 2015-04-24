@@ -28,7 +28,9 @@ window.onload = function() {
               detail.parentNode.removeEventListener('transitionend', tmp);
               detail.parentNode.classList.remove('effect');
               detail.parentNode.classList.remove('transitioning');
-              list.parentNode.classList.remove('current');
+              window.requestAnimationFrame(function() {
+                list.parentNode.classList.add('current');
+              });
             }
           );
 
