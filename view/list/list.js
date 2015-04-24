@@ -20,8 +20,6 @@ window.onload = function() {
   // Connect with parent
   var app;
   var element;
-  var list = document.querySelector('ul');
-
   window.addEventListener(
     'message',
     function onMessage (event) {
@@ -42,7 +40,6 @@ window.onload = function() {
             function tmp() {
               element.removeEventListener('transitionend', tmp);
                element.classList.remove('selected');
-               list.classList.remove('no-events');
             }
           );
           element.classList.remove('move-me');
@@ -52,10 +49,9 @@ window.onload = function() {
   );
 
   // Add listeners for 'tap' actions in the list
-  document.querySelector('ul').addEventListener(
+	document.querySelector('ul').addEventListener(
     'click',
     function(e) {
-      list.classList.add('no-events');
       // Get position for moving the element
       var position = getOffset(e.target);
       // Retrieve the element and add all effects magic

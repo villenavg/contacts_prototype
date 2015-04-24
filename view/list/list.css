@@ -16,10 +16,6 @@ ul {
   height: 100%;
 }
 
-ul.no-events {
-  pointer-events: none;
-}
-
 li {
   position: relative;
   float: left;
@@ -47,6 +43,5 @@ li div.selected {
 }
 
 li div.move-me {
-  transition: all .3s ease;
   width: 200%;
 }
