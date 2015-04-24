@@ -17,8 +17,15 @@ window.onload = function() {
           var title = params[1].split('=')[1];
 
           var header = document.querySelector('header');
-          header.style.background = '' + color;
+
           header.querySelector('span').textContent = title;
+          // Just a test
+          if (title === 'C') {
+            header.style.background = '';
+            header.classList.add('fondo');
+          } else {
+            header.style.background = '' + color;
+          }
           break;
       }
     }

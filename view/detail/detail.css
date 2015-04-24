@@ -54,3 +54,9 @@ ul li {
   line-height: 5rem;
   text-align: center;
 }
+
+.fondo {
+  background-image: url(image.jpg);
+  background-size: 140% auto;
+  background-position: center;
+}
