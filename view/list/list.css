@@ -29,7 +29,7 @@ li div{
   position: absolute;
   height: 100%;
   width: 100%;
-  transition: all .5s ease;
+  transition: all .4s ease;
   background: yellow;
   font-size: 3rem;
   line-height: 20rem;
@@ -43,5 +43,6 @@ li div.selected {
 }
 
 li div.move-me {
+  transition: all .3s ease;
   width: 200%;
 }
