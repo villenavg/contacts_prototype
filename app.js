@@ -17,6 +17,7 @@ window.onload = function() {
       switch(action) {
         case 'navigate':
           list.parentNode.classList.remove('effect');
+          detail.parentNode.classList.add('show');
           detail.parentNode.classList.add('transitioning');
           detail.parentNode.classList.add('effect');
 
@@ -29,6 +30,7 @@ window.onload = function() {
               detail.parentNode.classList.remove('effect');
               detail.parentNode.classList.remove('transitioning');
               list.parentNode.classList.remove('current');
+              list.parentNode.classList.remove('show');
             }
           );
 
@@ -37,6 +39,7 @@ window.onload = function() {
           });
           break;
         case 'back':
+          list.parentNode.classList.add('show');
           list.parentNode.classList.add('current');
           detail.parentNode.classList.add('transitioning');
           detail.parentNode.classList.add('effect');
@@ -47,6 +50,7 @@ window.onload = function() {
               detail.parentNode.removeEventListener('transitionend', tmp);
               detail.parentNode.classList.remove('effect');
               detail.parentNode.classList.remove('transitioning');
+              detail.parentNode.classList.remove('show');
               list.contentWindow.postMessage('reset?', '*');
             }
           );
