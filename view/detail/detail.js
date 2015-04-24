@@ -8,16 +8,17 @@ window.onload = function() {
       switch(action) {
         case 'init':
           app = event.source;
-          console.log('Detalle iniciado');
-          // app.postMessage('Desde Detalle', '*');
+          console.log('Detail initialized');
           break;
-        case 'color':
-          var params = event.data.split('?')[1];
-          var color = params.split('=')[1];
-          console.log('EL COLOR ES ' + color);
+        case 'render':
+          var params = event.data.split('?')[1].split('&');
 
-          document.querySelector('header').style.background = '' + color;
-          // console.log(document.querySelector('header'));
+          var color = params[0].split('=')[1];
+          var title = params[1].split('=')[1];
+
+          var header = document.querySelector('header');
+          header.style.background = '' + color;
+          header.querySelector('span').textContent = title;
           break;
       }
     }
@@ -27,7 +28,6 @@ window.onload = function() {
   document.getElementById('back-button').addEventListener(
     'click',
     function() {
-      // alert('vamos pa tras');
       app.postMessage('back', '*');
     }
   )

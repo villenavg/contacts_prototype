@@ -16,58 +16,49 @@ window.onload = function() {
       var params = event.data.split('?')[1];
       switch(action) {
         case 'navigate':
-          // TODO Leer parametros
-          console.log('Navega desde lista!!!');
+          list.parentNode.classList.remove('effect');
+          detail.parentNode.classList.add('transitioning');
+          detail.parentNode.classList.add('effect');
+
+          detail.contentWindow.postMessage('render?' + params, '*');
+
           detail.parentNode.addEventListener(
             'transitionend',
             function tmp() {
               detail.parentNode.removeEventListener('transitionend', tmp);
-
-              setTimeout(function() {
-                detail.parentNode.classList.remove('transitioning');
-                list.parentNode.classList.remove('current');
-              }, 100);
-
+              detail.parentNode.classList.remove('effect');
+              detail.parentNode.classList.remove('transitioning');
+              list.parentNode.classList.remove('current');
             }
-          )
-          detail.parentNode.classList.add('transitioning');
-          list.parentNode.classList.remove('effect');
-          detail.parentNode.classList.add('effect');
-          setTimeout(function() {
-            detail.parentNode.classList.add('current');
-          }, 500);
+          );
 
-          detail.contentWindow.postMessage('color?' + params, '*');
+          window.requestAnimationFrame(function() {
+            detail.parentNode.classList.add('current');
+          });
           break;
         case 'back':
-          // alert('vamos!');
-          list.parentNode.classList.add('transitioning');
           list.parentNode.classList.add('current');
           detail.parentNode.classList.add('transitioning');
-          // // detail.parentNode.classList.remove('current');
-          // // console.log('Back a la lista');
+          detail.parentNode.classList.add('effect');
+
           detail.parentNode.addEventListener(
             'transitionend',
             function tmp() {
               detail.parentNode.removeEventListener('transitionend', tmp);
+              detail.parentNode.classList.remove('effect');
               detail.parentNode.classList.remove('transitioning');
-              list.parentNode.classList.remove('transitioning');
+              list.contentWindow.postMessage('reset?', '*');
             }
-          )
+          );
 
-          // list.parentNode.classList.remove('current');
-
-          setTimeout(function() {
+          window.requestAnimationFrame(function() {
             detail.parentNode.classList.remove('current');
-          }, 500);
 
+          });
 
-          // // list.parentNode.classList.add('transitioning');
-          // // list.parentNode.classList.add('current');
-          list.contentWindow.postMessage('reset?', '*');
           break;
         default:
-          console.log('Mensaje aun no reconocido');
+          console.log('Message not handled.');
       }
 
     }

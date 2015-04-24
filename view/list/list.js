@@ -10,7 +10,7 @@ function getOffset( el ) {
 }
 
 window.onload = function() {
-  // Render different colors
+  // Render colors based on dataset
   var lis = document.querySelectorAll('li');
   for (var i = 0; i < lis.length; i++) {
     var div = lis[i].querySelector('div');
@@ -23,51 +23,45 @@ window.onload = function() {
   window.addEventListener(
     'message',
     function onMessage (event) {
+      // Cache parent
       app = event.source;
+      // Retrieve action requested
       var action = event.data.split('?')[0];
-      console.log('ACTION ' + action);
+
       switch(action) {
         case 'init':
-          console.log('Lista iniciada');
-          // app.postMessage('Desde lista', '*');
+          console.log('List initialized');
           break;
         case 'reset':
-
+          // Remove effect from element moved previously
           element.style.transform = '';
-          element.addEventListener(
-            'transitionend',
-            function tmp() {
-              element.removeEventListener('transitionend', tmp);
-              element.classList.remove('delay');
-            }
-          );
-          element.classList.add('delay');
           element.classList.remove('move-me');
           break;
       }
     }
   );
 
-
+  // Add listeners for 'tap' actions in the list
 	document.querySelector('ul').addEventListener(
     'click',
     function(e) {
+      // Get position for moving the element
       var position = getOffset(e.target);
-      console.log(window.pageYOffset);
-      console.log(position);
+      // Retrieve the element and add all effects magic
       element = e.target;
-      e.target.addEventListener(
+      element.addEventListener(
         'transitionend',
         function tmp() {
           element.removeEventListener('transitionend', tmp);
-          console.log('terminado');
+          // Add params to be sent to the parent
+          var params = 'color='+ e.target.dataset.color;
+          params += '&title=' + element.textContent;
+          // Send a request in order to navigate to the right panel
+          app.postMessage('navigate?' + params, '*');
         }
       );
-      e.target.style.transform = 'translate( -' + position.left + 'px, -' + position.top + 'px)';
-      e.target.classList.add('move-me');
-      app.postMessage('navigate?color = ' + e.target.dataset.color, '*');
-		}
+      element.classList.add('move-me');
+      element.style.transform = 'translate( ' + (-1 * position.left) + 'px, ' + (-1 * position.top) + 'px)';
+    }
   );
-
-
 }

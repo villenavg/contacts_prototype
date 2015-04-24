@@ -9,8 +9,6 @@ body, html {
   overflow: hidden;
 }
 
-
-
 ul {
   overflow: scroll;
   position: relative;
@@ -25,7 +23,6 @@ li {
   width: 50%;
   height: 20rem;
   box-sizing: border-box;
-  border: 1px solid red;
 }
 
 li div{
@@ -35,15 +32,14 @@ li div{
   transition: all .5s ease;
   background: yellow;
   font-size: 3rem;
-
+  line-height: 20rem;
+  font-size: 9rem;
+  text-align: center;
+  color: white;
 }
 
 li div.move-me {
   width: 200%;
   z-index: 20;
   background: blue;
-}
-
-li div.delay {
-  transition-delay: 1s;
 }
