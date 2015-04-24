@@ -38,6 +38,12 @@ li div{
   color: white;
 }
 
+.fondo {
+  background-image: url(image.jpg);
+  background-size: 150% auto;
+  background-position: center;
+}
+
 li div.selected {
   z-index: 20;
 }
@@ -45,4 +51,5 @@ li div.selected {
 li div.move-me {
   transition: all .3s ease;
   width: 200%;
+  background-size: 100% auto;
 }

@@ -14,7 +14,7 @@ window.onload = function() {
   var lis = document.querySelectorAll('li');
   for (var i = 0; i < lis.length; i++) {
     var div = lis[i].querySelector('div');
-    div.style.background = div.dataset.color;
+    div.style["background-color"] = div.dataset.color;
   }
 
   // Connect with parent
