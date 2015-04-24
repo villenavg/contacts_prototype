@@ -10,6 +10,7 @@ body, html {
 }
 
 header {
+  background: pink:;
   height: 20rem;
   width: 100%;
 }
@@ -18,12 +19,16 @@ header button {
   float: left;
   border: none;
   height: 100%;
-  width: 7rem;
-  background: transparent;
+  width: 10rem;
+  background-color: transparent;
+  background-image: url('back_white.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 80%;
 }
 
 header span {
-  margin-left: -3.5rem;
+  margin-left: -6.5rem;
   display: inline-block;
   font-size: 5rem;
   text-align: center;
@@ -33,4 +38,5 @@ header span {
   line-height: 20rem;
   font-size: 9rem;
   color: white;
+  pointer-events: none;
 }
