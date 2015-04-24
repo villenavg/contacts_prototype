@@ -35,6 +35,13 @@ window.onload = function() {
         case 'reset':
           // Remove effect from element moved previously
           element.style.transform = '';
+          element.addEventListener(
+            'transitionend',
+            function tmp() {
+              element.removeEventListener('transitionend', tmp);
+               element.classList.remove('selected');
+            }
+          );
           element.classList.remove('move-me');
           break;
       }
@@ -60,6 +67,7 @@ window.onload = function() {
           app.postMessage('navigate?' + params, '*');
         }
       );
+      element.classList.add('selected');
       element.classList.add('move-me');
       element.style.transform = 'translate( ' + (-1 * position.left) + 'px, ' + (-1 * position.top) + 'px)';
     }

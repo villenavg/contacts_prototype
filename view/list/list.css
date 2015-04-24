@@ -38,8 +38,10 @@ li div{
   color: white;
 }
 
+li div.selected {
+  z-index: 20;
+}
+
 li div.move-me {
   width: 200%;
-  z-index: 20;
-  background: blue;
 }
