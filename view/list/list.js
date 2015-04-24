@@ -63,12 +63,22 @@ window.onload = function() {
           // Add params to be sent to the parent
           var params = 'color='+ e.target.dataset.color;
           params += '&title=' + element.textContent;
-          // Send a request in order to navigate to the right panel
-          app.postMessage('navigate?' + params, '*');
+          element.addEventListener(
+            'transitionend',
+            function tmp2() {
+              element.removeEventListener('transitionend', tmp2);
+              // Send a request in order to navigate to the right panel
+              app.postMessage('navigate?' + params, '*');
+            }
+          );
+
+          element.classList.add('move-me');
+
+
         }
       );
       element.classList.add('selected');
-      element.classList.add('move-me');
+      // element.classList.add('move-me');
       element.style.transform = 'translate( ' + (-1 * position.left) + 'px, ' + (-1 * position.top) + 'px)';
     }
   );
