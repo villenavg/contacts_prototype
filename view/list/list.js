@@ -42,7 +42,9 @@ window.onload = function() {
                element.classList.remove('selected');
             }
           );
-          element.classList.remove('move-me');
+          window.requestAnimationFrame(function() {
+            element.classList.remove('move-me');
+          });
           break;
       }
     }
@@ -71,14 +73,12 @@ window.onload = function() {
               app.postMessage('navigate?' + params, '*');
             }
           );
-
-          element.classList.add('move-me');
-
-
+          window.requestAnimationFrame(function() {
+            element.classList.add('move-me');
+          });
         }
       );
       element.classList.add('selected');
-      // element.classList.add('move-me');
       element.style.transform = 'translate( ' + (-1 * position.left) + 'px, ' + (-1 * position.top) + 'px)';
     }
   );
