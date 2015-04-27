@@ -10,7 +10,6 @@ body, html {
 }
 
 header {
-  background: pink:;
   height: 20rem;
   width: 100%;
 }
@@ -55,7 +54,7 @@ ul li {
   text-align: center;
 }
 
-.fondo {
+.image-hack {
   background-image: url(image.jpg);
   background-size: 140% auto;
   background-position: center;

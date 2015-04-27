@@ -1,82 +1,52 @@
 var _uuid;
 window.onload = function() {
-  console.log('DETALLE CARGADO');
+  // Retrieve header from DOM
   var header = document.querySelector('header');
 
-
+  // Connect with our 'service' of navigation.
   var client = threads.client('navigation-service');
 
+  // First of all every panel must be registered.
   client.method('register', 'detail').then(function(uuid) {
     _uuid = uuid;
   });
 
-  client.on('enteringstart', function(properties) {
+  // If we want to navigate to this panel, we will execute some
+  // activities before navigating (for example start retrieving
+  // info from contacts)
+  client.on('beforenavigating', function(properties) {
     if (properties.uuid === _uuid) {
-      console.log('enteringstart received en DETALLE');
       // Clean styles before rendering anything new
       header.style.background = '';
-      header.classList.remove('fondo');
-      header.querySelector('span').textContent = '';
+      header.classList.remove('image-hack'); // XXX Remove hack for image
 
+      // Update title properly
+      header.querySelector('span').textContent = properties.params.title;
+
+      // XXX Remove hack with image
       if (properties.params.title === 'C') {
         header.style.background = '';
-        header.classList.add('fondo');
+        header.classList.add('image-hack');
       } else {
         header.style.background = '' + properties.params.color;
-        header.querySelector('span').textContent = properties.params.title;
       }
     }
   });
 
-  // var app;
-  // window.addEventListener(
-  //   'message',
-  //   function onMessage (event) {
-  //     var action = event.data.split('?')[0];
-  //     switch(action) {
-  //       case 'init':
-  //         app = event.source;
-  //         console.log('Detail initialized');
-  //         break;
-  //       case 'render':
-  //         var header = document.querySelector('header');
-
-  //         header.style.background = '';
-  //         header.classList.add('fondo');
-  //         header.querySelector('span').textContent = '';
-
-  //         var params = event.data.split('?')[1].split('&');
-
-  //         var color = params[0].split('=')[1];
-  //         var title = params[1].split('=')[1];
-
-  //         console.log(title);
-  //         // Just a test
-  //         if (title === 'C') {
-  //           header.style.background = '';
-  //           header.classList.add('fondo');
-  //         } else {
-  //           header.style.background = '' + color;
-  //           header.querySelector('span').textContent = title;
-  //         }
-  //         break;
-  //     }
-  //   }
-  // );
-
-
+  // Add listener to the 'back' button
   document.getElementById('back-button').addEventListener(
     'click',
     function() {
       client.method(
-        'exitingstart',
+        'goto',
         _uuid,
         {
           destination: 'list',
           effect: 'fade'
         }
       );
-      client.method('exitingend');
+      // No need to wait, due to no animation is needed in Detail
+      client.method('navigationready');
     }
   )
 }

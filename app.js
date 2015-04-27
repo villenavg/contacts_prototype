@@ -3,101 +3,39 @@
 window.onload = function() {
   var list = document.getElementById('list-iframe');
   var detail = document.getElementById('detail-iframe');
-  list.contentWindow.postMessage('init?', '*');
-  detail.contentWindow.postMessage('init?', '*');
 
 
   var client = threads.client('navigation-service');
 
-  client.method('updateCurrent', 'list');
-
+  // Listen about requests of navigation
   client.on('navigate', function(params) {
-    console.log(JSON.stringify(params));
+    // TODO Add a switch in order to have multiple transitions
+
+    // Get panels registered
     var fromPanel = document.getElementById(params.from);
     var toPanel = document.getElementById(params.to);
-    console.log('de ' + fromPanel + ' a ' + toPanel);
 
-    // Aplicamos la magia
-    fromPanel.classList.remove('effect');
-    toPanel.classList.add('transitioning');
+    // Add the 'magic'
+    fromPanel.classList.add('effect');
     toPanel.classList.add('effect');
+
+    // Show the next panel first
+    toPanel.classList.add('future');
 
     toPanel.addEventListener(
       'transitionend',
-      function tmp() {
-        toPanel.removeEventListener('transitionend', tmp);
+      function transitionHandler() {
+        toPanel.removeEventListener('transitionend', transitionHandler);
+
+        fromPanel.classList.remove('effect');
         toPanel.classList.remove('effect');
-        toPanel.classList.remove('transitioning');
-        window.requestAnimationFrame(function() {
-          fromPanel.classList.remove('current');
-          client.method('updateCurrent', params.to);
-        });
+        fromPanel.classList.remove('current');
+        toPanel.classList.remove('future');
+
+        // Let our service that navigation is over
+        client.method('navigationend');
       }
     );
-
-    window.requestAnimationFrame(function() {
-      toPanel.classList.add('current');
-    });
-
+    toPanel.classList.add('current');
   });
-
-
-
-  // window.addEventListener(
-  //   'message',
-  //   function onMessage (event) {
-  //     console.log(event.data);
-  //     var action = event.data.split('?')[0];
-  //     var params = event.data.split('?')[1];
-  //     switch(action) {
-  //       case 'navigate':
-  //         list.parentNode.classList.remove('effect');
-  //         detail.parentNode.classList.add('transitioning');
-  //         detail.parentNode.classList.add('effect');
-
-  //         detail.contentWindow.postMessage('render?' + params, '*');
-
-  //         detail.parentNode.addEventListener(
-  //           'transitionend',
-  //           function tmp() {
-  //             detail.parentNode.removeEventListener('transitionend', tmp);
-  //             detail.parentNode.classList.remove('effect');
-  //             detail.parentNode.classList.remove('transitioning');
-  //             window.requestAnimationFrame(function() {
-  //               list.parentNode.classList.add('current');
-  //             });
-  //           }
-  //         );
-
-  //         window.requestAnimationFrame(function() {
-  //           detail.parentNode.classList.add('current');
-  //         });
-  //         break;
-  //       case 'back':
-  //         list.parentNode.classList.add('current');
-  //         detail.parentNode.classList.add('transitioning');
-  //         detail.parentNode.classList.add('effect');
-
-  //         detail.parentNode.addEventListener(
-  //           'transitionend',
-  //           function tmp() {
-  //             detail.parentNode.removeEventListener('transitionend', tmp);
-  //             detail.parentNode.classList.remove('effect');
-  //             detail.parentNode.classList.remove('transitioning');
-  //             list.contentWindow.postMessage('reset?', '*');
-  //           }
-  //         );
-
-  //         window.requestAnimationFrame(function() {
-  //           detail.parentNode.classList.remove('current');
-
-  //         });
-
-  //         break;
-  //       default:
-  //         console.log('Message not handled.');
-  //     }
-
-  //   }
-  // );
 }

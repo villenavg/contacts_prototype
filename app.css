@@ -16,7 +16,6 @@ body, html {
   height: 100%;
   position: absolute;
   opacity: 0;
-  display: none;
   left: 0;
   top: 0;
 }
@@ -29,18 +28,18 @@ iframe {
 
 .effect {
   transition: all .3s ease;
-}
-
-.transitioning {
-  z-index: 100;
   pointer-events: none;
 }
 
 .current {
-  z-index: 10;
+  z-index: 1000;
   opacity: 1;
 }
 
-.show {
-  display: block;
+.future {
+  z-index: 2000;
+}
+
+.hidden {
+  display: none;
 }

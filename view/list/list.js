@@ -1,3 +1,6 @@
+
+// Method for retrieving the position of the element taking as a reference
+// the whole document (scroll included)
 function getOffset( el ) {
     var _x = 0;
     var _y = 0;
@@ -9,29 +12,40 @@ function getOffset( el ) {
     return { top: _y, left: _x };
 }
 
+// We will cache our UUID in order to establish the communication channel
 var _uuid;
+// Element clicked must be cached for animations
+var element;
+
 window.onload = function() {
+
   var client = threads.client('navigation-service');
 
   client.method('register', 'list').then(function(uuid) {
     _uuid = uuid;
   });
 
-  client.on('enteringstart', function(params) {
+  client.on('beforenavigating', function(params) {
     if (params.uuid === _uuid) {
-      console.log('enteringstart received en LISTA');
+      // TODO Currently we dont need anything, but it would be useful
+      // for updating the list before showing it again.
     }
   });
 
-  // client.method('exitingstart').then(function(value) {
-  //   console.log('VAMOS! ' + value);
-  // });
-
-
-  // client.method('waitforevent');
-  // client.on('pepito', function() {
-  //   console.log('Event received en LISTA');
-  // });
+  client.on('navigationend', function(params) {
+    if (params.uuid === _uuid) {
+      // Remove effect from element moved previously
+      element.style.transform = '';
+      element.addEventListener(
+        'transitionend',
+        function transitionHandler() {
+          element.removeEventListener('transitionend', transitionHandler);
+          element.classList.remove('selected');
+        }
+      );
+      element.classList.remove('move-me');
+    }
+  });
 
   // Render colors based on dataset
   var lis = document.querySelectorAll('li');
@@ -39,37 +53,6 @@ window.onload = function() {
     var div = lis[i].querySelector('div');
     div.style["background-color"] = div.dataset.color;
   }
-
-  // Connect with parent
-  var app;
-  var element;
-  // window.addEventListener(
-  //   'message',
-  //   function onMessage (event) {
-  //     // Cache parent
-  //     app = event.source;
-  //     // Retrieve action requested
-  //     var action = event.data.split('?')[0];
-
-  //     switch(action) {
-  //       case 'init':
-  //         console.log('List initialized');
-  //         break;
-  //       case 'reset':
-  //         // Remove effect from element moved previously
-  //         element.style.transform = '';
-  //         element.addEventListener(
-  //           'transitionend',
-  //           function tmp() {
-  //             element.removeEventListener('transitionend', tmp);
-  //              element.classList.remove('selected');
-  //           }
-  //         );
-  //         element.classList.remove('move-me');
-  //         break;
-  //     }
-  //   }
-  // );
 
   // Add listeners for 'tap' actions in the list
 	document.querySelector('ul').addEventListener(
@@ -81,7 +64,7 @@ window.onload = function() {
       element = e.target;
       // Let navigation we are moving
       client.method(
-        'exitingstart',
+        'goto',
         _uuid,
         {
           destination: 'detail',
@@ -96,18 +79,14 @@ window.onload = function() {
       // Add effects in exiting panels
       element.addEventListener(
         'transitionend',
-        function tmp() {
-          element.removeEventListener('transitionend', tmp);
-          // Add params to be sent to the parent
-          // var params = 'color='+ e.target.dataset.color;
-          // params += '&title=' + element.textContent;
+        function elementSelectedMove() {
+          element.removeEventListener('transitionend', elementSelectedMove);
           element.addEventListener(
             'transitionend',
-            function tmp2() {
-              element.removeEventListener('transitionend', tmp2);
+            function elementWidth() {
+              element.removeEventListener('transitionend', elementWidth);
               // Send a request in order to navigate to the right panel
-              client.method('exitingend');
-              // app.postMessage('navigate?' + params, '*');
+              client.method('navigationready');
             }
           );
 
@@ -115,7 +94,6 @@ window.onload = function() {
         }
       );
       element.classList.add('selected');
-      // element.classList.add('move-me');
       element.style.transform = 'translate( ' + (-1 * position.left) + 'px, ' + (-1 * position.top) + 'px)';
     }
   );
