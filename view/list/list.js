@@ -21,11 +21,11 @@ function renderContacts(renderCB, onRenderedCB) {
 }
 
 function renderContact(data) {
+  var contact = JSON.parse(data.contact);
   if (firstContact) {
     performance.mark('first_contact_' + renderCount);
     firstContact = false;
   }
-  var contact = JSON.parse(data.contact);
   var li = document.createElement('li');
   var name = contact.givenName[0];
   if (data.photo && data.photo.length > 0) {
