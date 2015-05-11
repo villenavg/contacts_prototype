@@ -2,12 +2,15 @@ var contactsService;
 var firstContact = true;
 var renderCount = 0;
 var maxRenders = 10;
+var chunkCount = 0;
+var chunk = 50;
 var ul;
+var performance = window.parent.performance;
 
 function renderContacts(renderCB, onRenderedCB) {
   var stream = contactsService.stream('getAll');
   // Called every time the service sends a contact
-  stream.listen(function(data) {
+  stream.listen(function (data) {
     renderCB(data);
   });
 
@@ -26,6 +29,9 @@ function renderContact(data) {
     performance.mark('first_contact_' + renderCount);
     firstContact = false;
   }
+  if (chunkCount++ === chunk) {
+      performance.mark('chunk_' + renderCount);
+  }
   var li = document.createElement('li');
   var name = contact.givenName[0];
   if (data.photo && data.photo.length > 0) {
@@ -34,7 +40,7 @@ function renderContact(data) {
   } else {
     li.innerHTML = '<div data-contact="' + contact.id + '" data-color="' + colors[colorIndex] + '">' + name.charAt(0) + '</div>';
     li.querySelector('div').style["background-color"] = colors[colorIndex];
-    if (++colorIndex === colors.length -1) {
+    if (++colorIndex === colors.length - 1) {
       colorIndex = 0;
     }
   }
@@ -43,62 +49,66 @@ function renderContact(data) {
   });
 }
 
+function processResults(result, measure_type, result_type) {
+  for (var i = 0; i < maxRenders; i++) {
+    var measure = performance.getEntriesByName(measure_type + i, 'measure')[0];
+
+    result[result_type].average += measure.duration;
+    if (i > 0) {
+      result[result_type].average_from_first += measure.duration;
+    }
+    if (measure.duration > result[result_type].peak) {
+      result[result_type].peak = measure.duration;
+    }
+  }
+
+  result[result_type].average_from_first = result[result_type].average_from_first / (maxRenders - 1);
+  result[result_type].average = result[result_type].average / maxRenders;
+};
+
+
 function allRenderedHandler(e) {
+  var performanceResult = {
+    first_contact: {
+      peak: 0,
+      average: 0,
+      average_from_first: 0
+    },
+    all_rendered: {
+      peak: 0,
+      average: 0,
+      average_from_first: 0
+    },
+    chunk_rendered: {
+      peak: 0,
+      average: 0,
+      average_from_first: 0
+    }
+  };
+  var keys = {};
+  var measure_types = ['first_rendered_', 'all_rendered_', 'chunk_rendered_'];
+
   if (e) {
     alert('ERROR! ');
     return;
   }
   firstContact = true;
+  chunkCount = 0;
+
   performance.mark('contacts_rendered_' + renderCount);
   performance.measure('first_rendered_' + renderCount, 'request_all_' + renderCount, 'first_contact_' + renderCount);
   performance.measure('all_rendered_' + renderCount, 'request_all_' + renderCount, 'contacts_rendered_' + renderCount);
+  performance.measure('chunk_rendered_' + renderCount, 'request_all_' + renderCount, 'chunk_' + renderCount);
 
   if (++renderCount < maxRenders) {
     setTimeout(renderList, 1000);
   } else {
-    console.log('******** PERFORMANCE SUMMARY ********');
-    var measures = performance.getEntriesByType('measure');
-    var performanceResult = {
-      first_contact: {
-        peak: 0,
-        average: 0,
-        average_from_first: 0
-      },
-      all_rendered: {
-        peak: 0,
-        average: 0,
-        average_from_first: 0
-      }
+    keys = Object.keys(performanceResult);
+    for (var i = 0; i < keys.length; i++) {
+      processResults(performanceResult, measure_types[i], keys[i]);
     };
-    for (var i = 0; i < measures.length; i++) {
-      if (i%2 === 0) {
-        performanceResult.first_contact.average += measures[i].duration;
-        if (i > 0) {
-          performanceResult.first_contact.average_from_first += measures[i].duration;
-        }
 
-        if (measures[i].duration > performanceResult.first_contact.peak) {
-          performanceResult.first_contact.peak = measures[i].duration;
-        }
-      } else {
-        performanceResult.all_rendered.average += measures[i].duration;
-        if (i > 1) {
-          performanceResult.all_rendered.average_from_first += measures[i].duration;
-        }
-
-        if (measures[i].duration > performanceResult.all_rendered.peak) {
-          performanceResult.all_rendered.peak = measures[i].duration;
-        }
-      }
-    }
-
-
-    performanceResult.first_contact.average_from_first = performanceResult.first_contact.average_from_first / (maxRenders - 1);
-    performanceResult.all_rendered.average_from_first = performanceResult.all_rendered.average_from_first / (maxRenders - 1);
-
-    performanceResult.first_contact.average = performanceResult.first_contact.average / maxRenders;
-    performanceResult.all_rendered.average = performanceResult.all_rendered.average / maxRenders;
-
+    console.log('******** PERFORMANCE SUMMARY (Renders= ' + maxRenders + ') ********');
     console.log('**** FIRST CONTACT ****');
     console.log('Peak:' + performanceResult.first_contact.peak);
     console.log('Average:' + performanceResult.first_contact.average);
@@ -108,6 +118,11 @@ function allRenderedHandler(e) {
     console.log('Peak:' + performanceResult.all_rendered.peak);
     console.log('Average:' + performanceResult.all_rendered.average);
     console.log('Average after the first request:' + performanceResult.all_rendered.average_from_first);
+
+    console.log('**** CHUNK RETRIEVED ****');
+    console.log('Peak:' + performanceResult.chunk_rendered.peak);
+    console.log('Average:' + performanceResult.chunk_rendered.average);
+    console.log('Average after the first request:' + performanceResult.chunk_rendered.average_from_first);
 
   }
 }
@@ -268,6 +283,8 @@ window.onload = function() {
 	document.querySelector('ul').addEventListener(
     'click',
     function(e) {
+      console.log('Getting contact....')
+      performance.mark('request_get_contact')
       document.querySelector('ul').classList.add('no-events');
       // Get position for moving the element
       var position = getOffset(e.target);

@@ -1,4 +1,6 @@
 var _uuid;
+var performance = window.parent.performance;
+
 window.onload = function() {
   // Retrieve header from DOM
   var header = document.querySelector('header');
@@ -37,7 +39,10 @@ window.onload = function() {
       }
 
       // First of all every panel must be registered.
+      performance.mark('request_get_contact_service');
       contactsService.method('get', properties.params.contact).then(function(contactSerialized) {
+        performance.mark('received_contact_from_service');
+        performance.measure('contact_from_service', 'request_get_contact_service', 'received_contact_from_service');
         // XXXX Optimize this when ready
         var contact = JSON.parse(contactSerialized);
 
@@ -74,6 +79,19 @@ window.onload = function() {
           infoContainer.appendChild(telHeader);
           infoContainer.appendChild(telUL);
         }
+        // Get access to iframe-details performance object
+        performance.mark('contact_rendered');
+        performance.measure('contact_detail_rendered', 'request_get_contact', 'contact_rendered');
+
+        console.log('************* CONTACT FROM SERVICE *************')
+        var contact_service_measures = performance.getEntriesByName('contact_from_service');
+        var last_measure = contact_service_measures[contact_service_measures.length - 1];
+        console.log('Got the contact from the service in: ' + last_measure.duration);
+        console.log();
+        console.log("************* RENDER OF A CONTACT'S DETAIL *************");
+        var durations_measures = performance.getEntriesByName('contact_detail_rendered');
+        var last_measure = durations_measures[durations_measures.length - 1];
+        console.log('Rendered in: ' + last_measure.duration);
       });
     }
   });
