@@ -1,7 +1,7 @@
 var contactsService;
 var firstContact = true;
 var renderCount = 0;
-var maxRenders = 10;
+var maxRenders = 2;
 var chunkCount = 0;
 var chunk = 50;
 var ul;
@@ -243,6 +243,14 @@ window.onload = function() {
             }
           );
           element.classList.remove('move-me');
+          
+          performance.mark('back_from_detail');
+          performance.measure('navigation_detail_list', 'go_back_to_list', 'back_from_detail');
+          
+          console.log("************* NAVIGATION DETAILS -> LIST *************");
+          var nav_detail_list_measures = performance.getEntriesByName('navigation_detail_list');
+          var last_measure = nav_detail_list_measures[nav_detail_list_measures.length - 1];
+          console.log('Navigation in: ' + last_measure.duration);
           break;
         case 'settings':
           settingsButton.classList.remove('rotate');

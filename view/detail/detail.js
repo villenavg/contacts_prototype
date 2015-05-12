@@ -95,11 +95,24 @@ window.onload = function() {
       });
     }
   });
+  
+  client.on('navigationend', function(params) {
+    if (params.uuid === _uuid) {
+      performance.mark('nav_end_from_list');
+      performance.measure('navigation_list_detail', 'request_get_contact', 'nav_end_from_list');
+
+      console.log("************* NAVIGATION LIST -> DETAIL *************");
+      var nav_list_detail_measures = performance.getEntriesByName('navigation_list_detail');
+      var last_measure = nav_list_detail_measures[nav_list_detail_measures.length - 1];
+      console.log('Navigation in: ' + last_measure.duration);
+    }
+  });
 
   // Add listener to the 'back' button
   document.getElementById('back-button').addEventListener(
     'click',
     function() {
+      performance.mark('go_back_to_list');
       client.method(
         'goto',
         _uuid,
